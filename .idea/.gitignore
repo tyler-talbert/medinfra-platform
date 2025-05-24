@@ -1,0 +1,12 @@
+# Ignore all .iml files
+*.iml
+
+# Ignore IntelliJ IDEA project settings folder
+.idea/
+
+# Ignore workspace-specific files
+.idea/workspace.xml
+.idea/shelf/
+.idea/httpRequests/
+.idea/dataSources/
+.idea/dataSources.local.xml
