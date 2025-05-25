@@ -4,7 +4,7 @@ Content-Type: application/json
 
 {
   "name" : "Jon Jones",
-  "email" : "johnjones@gmail.com",
+  "email" : "jonjones@gmail.com",
   "address": "8808 Lavender Lace Ct Ne",
   "dateOfBirth": "1987-07-19"
 }
