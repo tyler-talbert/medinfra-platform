@@ -16,10 +16,11 @@ public class JwtUtil {
     private final Key secretKey;
 
     public JwtUtil(@Value("${jwt.secret}") String secret) {
-        byte[] keyBytes = Base64.getDecoder().decode(secret.getBytes(StandardCharsets.UTF_8));
-
+        byte[] keyBytes = Base64.getDecoder()
+                .decode(secret.getBytes(StandardCharsets.UTF_8));
         this.secretKey = Keys.hmacShaKeyFor(keyBytes);
     }
+
 
     public String generateToken(String email, String role) {
         return Jwts.builder()
