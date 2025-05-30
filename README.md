@@ -42,8 +42,8 @@ This project is a fully containerized, production-style microservices platform b
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/your-handle/microservices-platform.git
-cd microservices-platform
+git clone https://github.com/tyler-talbert/medinfra-platform.git
+cd patient-management
 ```
 
 ### 2. Start the Application
