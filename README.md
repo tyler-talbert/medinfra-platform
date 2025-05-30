@@ -1,4 +1,4 @@
-# 🧠 Microservices Platform – End-to-End System (Spring Boot + Kafka + gRPC)
+# 🧠 Microservices Platform – Patient Management System (Spring Boot + Kafka + gRPC + Docker)
 
 ## Overview
 
@@ -23,8 +23,8 @@ This project is a fully containerized, production-style microservices platform b
 **Infrastructure & Tools:**
 
 - Docker Compose for orchestration
-- Kafka + Zookeeper for event streams
-- MySQL for relational data storage
+- Kafka for event streams
+- PostgreSQL for relational data storage
 - LocalStack for simulated AWS (VPC, ECS, MSK)
 
 ## 🛠️ Tech Stack
@@ -33,9 +33,20 @@ This project is a fully containerized, production-style microservices platform b
 - **Messaging:** Apache Kafka
 - **Auth:** JWT (JSON Web Tokens)
 - **Containerization:** Docker, Docker Compose
-- **Database:** MySQL
+- **Database:** PostgreSQL
 - **Cloud Simulation:** LocalStack (for AWS CloudFormation, MSK, VPC)
 - **Docs:** OpenAPI (Swagger)
+
+## 📁 Project Structure
+
+- `/api-gateway` – Spring Cloud Gateway routes + JWT filter
+- `/auth-service` – Login + token issuance
+- `/patient-service` – gRPC server + REST exposure
+- `/billing-service` – Kafka producer (billing events)
+- `/analytics-service` – Kafka consumer (analytics)
+- `/proto` – Shared .proto definitions for gRPC
+- `/docker-compose.yml` – Spin up entire stack locally
+
 
 ## 🚀 Getting Started
 
@@ -43,7 +54,7 @@ This project is a fully containerized, production-style microservices platform b
 
 ```bash
 git clone https://github.com/tyler-talbert/medinfra-platform.git
-cd patient-management
+cd medinfra-platform
 ```
 
 ### 2. Start the Application
@@ -52,7 +63,7 @@ cd patient-management
 docker-compose up --build
 ```
 
-All services will start in isolated containers. Kafka, MySQL, and microservices will be accessible via internal Docker networking.
+All services will start in isolated containers. All services—including Kafka, PostgreSQL, and internal APIs—are accessible via Docker service names through the internal network.
 
 > ⚠️ Prerequisites: Make sure Docker and Docker Compose are installed and running on your machine.
 
@@ -67,9 +78,69 @@ All services will start in isolated containers. Kafka, MySQL, and microservices 
 | Patient | `/api/patients` | `GET, POST, PUT, DELETE` | Manage patient records |
 | Billing | `/api/billing` | `POST` | Trigger billing workflows |
 | Auth | `/api/auth/login` | `POST` | Get JWT token for access |
-| Analytics | Kafka-only | `N/A` | Consumes events in background |
 
-> Access Swagger UI per service at: `http://localhost:4004/swagger-ui.html` (configured in each service)
+
+> Access Swagger UI per service via the Gateway:
+
+- [Auth Service Swagger](http://localhost:4004/swagger-ui/index.html?url=/api-docs/auth)
+- [Patient Service Swagger](http://localhost:4004/swagger-ui/index.html?url=/api-docs/patients)
+
+---
+
+🧪 Integration Testing with Secured API Gateway Routes
+This platform uses Spring Cloud Gateway to proxy and secure access to internal microservices via JWT authentication. Routes are exposed through Docker container names and include built-in request filtering and documentation access.
+
+### 🔐 API Gateway Routes
+
+| Gateway Path        | Target Service              | Method(s)               | Description                                    |
+|---------------------|-----------------------------|--------------------------|------------------------------------------------|
+| `/api/patients/**`  | `patient-service:4000`      | GET, POST, PUT, DELETE   | Protected patient CRUD API (requires JWT)      |
+| `/auth/**`          | `auth-service:4005`         | POST                     | Login endpoint (returns JWT)                   |
+| `/api-docs/patients` | `patient-service:4000` | GET | Rewrites to `/v3/api-docs` internally |
+| `/api-docs/auth`     | `auth-service:4005`    | GET | Rewrites to `/v3/api-docs` internally |
+
+
+🔁 JWT tokens are issued via /auth/login and validated by a custom JwtValidation Gateway filter.
+
+✅ Example Integration Flow
+
+    @Test
+    public void shouldReturnPatientsWithValidToken() {
+        String token = given()
+            .contentType("application/json")
+            .body("{\"email\": \"testuser@test.com\", \"password\": \"password123\"}")
+            .when()
+            .post("/auth/login")
+            .then()
+            .statusCode(200)
+            .extract()
+            .jsonPath()
+            .get("token");
+
+    given()
+        .header("Authorization", "Bearer " + token)
+        .when()
+        .get("/api/patients")
+        .then()
+        .statusCode(200)
+        .body("patients", notNullValue());
+    }
+This test verifies:
+
+JWT login flow works as expected
+
+Authenticated users can access protected routes
+
+Gateway routes and filters are correctly configured
+
+### 📖 Swagger UI Access
+
+Interactive Swagger docs are available through the API Gateway (rewrite paths in place):
+
+Patient Service: http://localhost:4004/swagger-ui/index.html?url=/api-docs/patients
+
+Auth Service: http://localhost:4004/swagger-ui/index.html?url=/api-docs/auth
+
 
 ---
 
@@ -78,7 +149,7 @@ All services will start in isolated containers. Kafka, MySQL, and microservices 
 - ✅ Secure JWT-based authentication and API Gateway routing
 - 🧵 gRPC for low-latency internal calls
 - 🔁 Kafka for event-driven communication
-- 🐬 MySQL for persistent storage
+- 🐬 PostgreSQL for persistent storage
 - ☁️ LocalStack to simulate AWS infrastructure provisioning (ECS, VPC, MSK)
 - 🐳 Docker Compose to spin up all services in seconds
 
