@@ -69,7 +69,7 @@ All services will start in isolated containers. Kafka, MySQL, and microservices 
 | Auth | `/api/auth/login` | `POST` | Get JWT token for access |
 | Analytics | Kafka-only | `N/A` | Consumes events in background |
 
-> Access Swagger UI per service at: `http://localhost:<PORT>/swagger-ui.html` (configured in each service)
+> Access Swagger UI per service at: `http://localhost:4004/swagger-ui.html` (configured in each service)
 
 ---
 
