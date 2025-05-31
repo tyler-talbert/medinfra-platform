@@ -178,7 +178,7 @@ Auth Service: http://localhost:4004/swagger-ui/index.html?url=/api-docs/auth
 ## 👨‍💻 Author
 
 **Tyler Talbert** – Senior Software Engineer @ Visa  
-[LinkedIn](www.linkedin.com/in/tylertal)
+[LinkedIn](https://www.linkedin.com/in/tylertal)
 
 ---
 
