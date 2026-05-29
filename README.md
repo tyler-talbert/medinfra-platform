@@ -1,4 +1,3 @@
-````markdown
 # Patient Management Platform
 
 Containerized microservices backend simulating a healthcare system. Built to practice service-to-service patterns I don't get to touch much at work: gRPC, Kafka, JWT-secured gateway routing, and AWS infra emulated locally with LocalStack.
@@ -108,4 +107,3 @@ Exercises the login flow, JWT propagation, gateway filter, and protected route i
 ## Author
 
 Tyler Talbert — [LinkedIn](https://www.linkedin.com/in/tylertal)
-````
